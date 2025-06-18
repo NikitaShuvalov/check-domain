@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Livewire;
 
 use Livewire\Component;
@@ -10,6 +12,13 @@ class DomainChecker extends Component
 
     public function checkDomains()
     {
+        $this->validate([
+        'input' => 'required|string',
+        ], [
+        'input.required' => 'Введите хотя бы один домен',
+        'input.string' => 'Данные должны быть строкой',
+        ]);
+
         $domains = collect(preg_split('/[\n,]+/', $this->input))
             ->map(fn($d) => trim($d))
             ->filter()
@@ -23,7 +32,6 @@ class DomainChecker extends Component
                 continue;
             }
 
-            // Фейковый WHOIS
             if (Str::endsWith($domain, '.test')) {
                 $this->results[$domain] = 'Доступен для покупки';
             } else {

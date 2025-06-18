@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -27,4 +29,15 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+{
+    if ($exception instanceof MethodNotAllowedHttpException && $request->is('api/*')) {
+        return response()->json([
+            'message' => 'Метод не поддерживается. Используйте POST.'
+        ], 405);
+    }
+
+    return parent::render($request, $exception);
+}
 }
